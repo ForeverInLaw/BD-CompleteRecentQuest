@@ -34,8 +34,8 @@ A BetterDiscord plugin that automates completing Discord quests. It adds a float
 - Quest lists auto-refresh every `30s` while the selector is open.
 
 ## Localization
-- Locale is detected from Discord user settings; falls back to `navigator.language`, then to `ru`.
-- Available bundles: English (`en*`) and Russian (`ru` default). Additions require extending `STRINGS_EN`/`STRINGS_RU` in the source.
+- Locale is detected from Discord user settings; falls back to `navigator.language`, then to `en`.
+- Available bundles: English (`en*` default) and Russian (`ru`). Additions require extending `STRINGS_EN`/`STRINGS_RU` in the source.
 
 ## Safety and Limits
 - Uses BetterDiscord Webpack stores and Discord native APIs; changes to Discord internals can break the plugin.

@@ -63,15 +63,23 @@ const createSvgIcon = (pathD, viewBox = "0 0 24 24") => {
   return svg;
 };
 
+const getRussianQuestSuffix = count => {
+  const mod10 = count % 10;
+  const mod100 = count % 100;
+  if (mod10 === 1 && mod100 !== 11) return "";
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return "а";
+  return "ов";
+};
+
 const STRINGS_RU = {
   availableQuestsTitle: "Доступные квесты",
-  availableQuestsCount: (count, suffix) => `${count} квест${suffix} доступно`,
+  availableQuestsCount: count => `${count} квест${getRussianQuestSuffix(count)} доступно`,
   loadingSubtitle: "Загрузка...",
   noQuestsText: "Нет доступных квестов",
   noQuestsHint: "Примите квест в Discord и обновите список",
   desktopOnlyBadge: "Только Desktop",
   expiresInDays: days => `Осталось ${days} дн.`,
-  minutesShort: "мин.",
+  minutesShort: "мин",
   questActiveTitle: "Quest Active",
   completedTitle: "Completed",
   errorTitle: "Error",
@@ -124,7 +132,7 @@ const STRINGS_RU = {
 
 const STRINGS_EN = {
   availableQuestsTitle: "Available quests",
-  availableQuestsCount: (count, suffix) => `${count} quest${suffix} available`,
+  availableQuestsCount: count => `${count} ${count === 1 ? "quest" : "quests"} available`,
   loadingSubtitle: "Loading...",
   noQuestsText: "No quests available",
   noQuestsHint: "Accept a quest in Discord and refresh the list",
@@ -638,7 +646,7 @@ class QuestSelectorPanel {
   updateQuests(quests, isDesktopApp) {
     this.quests = quests;
     this.subtitle.textContent = quests.length > 0
-      ? STRINGS.availableQuestsCount(quests.length, this.#pluralize(quests.length))
+      ? STRINGS.availableQuestsCount(quests.length)
       : STRINGS.noQuestsText;
 
     while (this.list.firstChild) {
@@ -654,14 +662,6 @@ class QuestSelectorPanel {
       const item = this.#createQuestItem(quest, isDesktopApp);
       this.list.appendChild(item);
     }
-  }
-
-  #pluralize(n) {
-    const mod10 = n % 10;
-    const mod100 = n % 100;
-    if (mod10 === 1 && mod100 !== 11) return "";
-    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return "а";
-    return "ов";
   }
 
   #renderEmpty() {
@@ -1174,12 +1174,12 @@ class QuestTaskRunner {
     };
 
     return {
-      ApplicationStreamingStore: pickStore(m => Object.getPrototypeOf(m?.Z)?.getStreamerActiveStreamMetadata, "Z", "ApplicationStreamingStore"),
+      ApplicationStreamingStore: pickStore(m => m?.Z && Object.getPrototypeOf(m.Z)?.getStreamerActiveStreamMetadata, "Z", "ApplicationStreamingStore"),
       RunningGameStore: pickStore(m => m?.ZP?.getRunningGames, "ZP", "RunningGameStore"),
-      QuestsStore: pickStore(m => Object.getPrototypeOf(m?.Z)?.getQuest, "Z", "QuestsStore"),
-      ChannelStore: pickStore(m => Object.getPrototypeOf(m?.Z)?.getSortedPrivateChannels, "Z", "ChannelStore"),
+      QuestsStore: pickStore(m => m?.Z && Object.getPrototypeOf(m.Z)?.getQuest, "Z", "QuestsStore"),
+      ChannelStore: pickStore(m => m?.Z && Object.getPrototypeOf(m.Z)?.getSortedPrivateChannels, "Z", "ChannelStore"),
       GuildChannelStore: pickStore(m => m?.ZP?.getAllGuilds, "ZP", "GuildChannelStore"),
-      FluxDispatcher: pickStore(m => Object.getPrototypeOf(m?.Z)?.flushWaitQueue, "Z", "FluxDispatcher"),
+      FluxDispatcher: pickStore(m => m?.Z && Object.getPrototypeOf(m.Z)?.flushWaitQueue, "Z", "FluxDispatcher"),
       api: pickStore(m => m?.tn?.get, "tn", "REST API")
     };
   }
@@ -1597,7 +1597,7 @@ module.exports = class CompleteRecentQuest {
   #getAvailableQuests() {
     const { Webpack } = BdApi;
     
-    const mod = Webpack.getModule(m => Object.getPrototypeOf(m?.Z)?.getQuest, { defaultExport: false });
+    const mod = Webpack.getModule(m => m?.Z && Object.getPrototypeOf(m.Z)?.getQuest, { defaultExport: false });
     const QuestsStore = mod?.Z;
     
     if (!QuestsStore?.quests) {
