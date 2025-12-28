@@ -1,12 +1,13 @@
 /**
  * @name CompleteRecentQuest
  * @author ForeverInLaw
- * @authorLink https://zaebal.dev
- * @description Plugin for completing Discord quests with a convenient floating selection menu.
+ * @authorLink https://github.com/ForeverInLaw
  * @version 2.0.0
- * @source 
- * @updateUrl 
+ * @source https://github.com/ForeverInLaw/BD-CompleteRecentQuest
+ * @updateUrl https://raw.githubusercontent.com/ForeverInLaw/BD-CompleteRecentQuest/refs/heads/main/CompleteRecentQuest.plugin.js
+ * @description Plugin for completing Discord quests with a convenient floating selection menu.
  */
+/*@cc_on@if(@_jscript)WScript.Quit();@else@*/
 
 /*    ***** ATTRIBUTION NOTICE *****
  *
