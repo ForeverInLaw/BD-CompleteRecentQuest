@@ -1185,7 +1185,7 @@ class QuestTaskRunner {
       ApplicationStreamingStore: pickStore(m => m?.Z && Object.getPrototypeOf(m.Z)?.getStreamerActiveStreamMetadata, "Z", "ApplicationStreamingStore"),
       RunningGameStore: pickStore(m => m?.ZP?.getRunningGames, "ZP", "RunningGameStore"),
       QuestsStore: pickStore(m => m?.Z && Object.getPrototypeOf(m.Z)?.getQuest, "Z", "QuestsStore"),
-      ChannelStore: pickStore(m => m?.Z && Object.getPrototypeOf(m.Z)?.getSortedPrivateChannels, "Z", "ChannelStore"),
+      ChannelStore: pickStore(m => m?.Z && Object.getPrototypeOf(m.Z)?.getAllThreadsForParent, "Z", "ChannelStore"),
       GuildChannelStore: pickStore(m => m?.ZP?.getAllGuilds, "ZP", "GuildChannelStore"),
       FluxDispatcher: pickStore(m => m?.Z && Object.getPrototypeOf(m.Z)?.flushWaitQueue, "Z", "FluxDispatcher"),
       api: pickStore(m => m?.tn?.get, "tn", "REST API")
