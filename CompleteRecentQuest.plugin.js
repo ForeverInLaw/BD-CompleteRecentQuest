@@ -372,7 +372,7 @@ class QuestSelectorPanel {
         border-radius: 20px;
         box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
         font-family: 'gg sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        z-index: 99997;
+        z-index: 100000;
         overflow: hidden;
         opacity: 0;
         transform: translateY(16px) scale(0.96);
