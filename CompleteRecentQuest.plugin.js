@@ -1111,41 +1111,45 @@ class QuestTaskRunner {
   async run(selectedQuest = null) {
     this.#status(STRINGS.searchingQuests);
     const env = this.#loadEnvironment();
-    const quest = selectedQuest ?? this.#selectQuest(env.QuestsStore);
+    try {
+      const quest = selectedQuest ?? this.#selectQuest(env.QuestsStore);
 
-    if (!quest) {
-      this.#toast(STRINGS.questNotFound, "info");
-      this.statusPanel?.markSuccess(STRINGS.questsNotFoundStatus);
-      this.statusPanel?.setProgress(STRINGS.questNotFoundProgress);
-      this.statusPanel?.autoDismiss();
-      return;
+      if (!quest) {
+        this.#toast(STRINGS.questNotFound, "info");
+        this.statusPanel?.markSuccess(STRINGS.questsNotFoundStatus);
+        this.statusPanel?.setProgress(STRINGS.questNotFoundProgress);
+        this.statusPanel?.autoDismiss();
+        return;
+      }
+
+      const context = this.#buildQuestContext(quest);
+      const summary = `${context.questName} (${context.taskName.replaceAll("_", " ")})`;
+      this.#status(STRINGS.detectedQuest(summary));
+
+      switch (context.taskName) {
+        case "WATCH_VIDEO":
+        case "WATCH_VIDEO_ON_MOBILE":
+          await this.#completeVideoQuest(env, context);
+          break;
+        case "PLAY_ON_DESKTOP":
+          await this.#completePlayOnDesktop(env, context);
+          break;
+        case "STREAM_ON_DESKTOP":
+          await this.#completeStreamOnDesktop(env, context);
+          break;
+        case "PLAY_ACTIVITY":
+          await this.#completePlayActivity(env, context);
+          break;
+        default:
+          throw new Error(STRINGS.unknownTask(context.taskName));
+      }
+
+      this.#toast(STRINGS.questCompleteToast(context.questName), "success");
+      this.statusPanel?.markSuccess(STRINGS.questCompleteStatus(context.questName));
+      this.statusPanel?.autoDismiss(5000);
+    } finally {
+      this.#cleanupAll();
     }
-
-    const context = this.#buildQuestContext(quest);
-    const summary = `${context.questName} (${context.taskName.replaceAll("_", " ")})`;
-    this.#status(STRINGS.detectedQuest(summary));
-
-    switch (context.taskName) {
-      case "WATCH_VIDEO":
-      case "WATCH_VIDEO_ON_MOBILE":
-        await this.#completeVideoQuest(env, context);
-        break;
-      case "PLAY_ON_DESKTOP":
-        await this.#completePlayOnDesktop(env, context);
-        break;
-      case "STREAM_ON_DESKTOP":
-        await this.#completeStreamOnDesktop(env, context);
-        break;
-      case "PLAY_ACTIVITY":
-        await this.#completePlayActivity(env, context);
-        break;
-      default:
-        throw new Error(STRINGS.unknownTask(context.taskName));
-    }
-
-    this.#toast(STRINGS.questCompleteToast(context.questName), "success");
-    this.statusPanel?.markSuccess(STRINGS.questCompleteStatus(context.questName));
-    this.statusPanel?.autoDismiss(5000);
   }
 
   stop() {
@@ -1153,7 +1157,6 @@ class QuestTaskRunner {
     this.#log(STRINGS.userStopped);
     this.statusPanel?.markError(STRINGS.userStopped);
     this.statusPanel?.autoDismiss();
-    this.#cleanupAll();
   }
 
   #loadEnvironment() {
