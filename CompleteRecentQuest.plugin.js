@@ -692,7 +692,11 @@ class QuestSelectorPanel {
     
     const task = taskConfig?.tasks?.[taskName];
     const secondsNeeded = task?.target ?? 0;
-    const secondsDone = quest.userStatus?.progress?.[taskName]?.value ?? 0;
+    const configVersion = quest.config.configVersion ?? 2;
+    const isLegacyDesktopStream = configVersion === 1 && ["PLAY_ON_DESKTOP", "STREAM_ON_DESKTOP"].includes(taskName);
+    const secondsDone = isLegacyDesktopStream
+      ? (quest.userStatus?.streamProgressSeconds ?? 0)
+      : (quest.userStatus?.progress?.[taskName]?.value ?? 0);
     const progress = secondsNeeded > 0 ? Math.min(1, Math.max(0, secondsDone / secondsNeeded)) : 0;
     
     const isDesktopOnly = ["PLAY_ON_DESKTOP", "STREAM_ON_DESKTOP"].includes(taskName);
